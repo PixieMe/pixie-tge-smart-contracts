@@ -36,10 +36,10 @@ contract PixieCrowdsale is Crowdsale, Pausable {
   // price per token (no discount)
   uint256 public rate = 396039;
 
-  // 25% discount
-  uint256 public privateSaleRate = 495049;
+  // 22.5% bonus
+  uint256 public privateSaleRate = 485148;
 
-  // 12.5% discount
+  // 12.5% bonus
   uint256 public preSaleRate = 445544;
 
   uint256 public softCap = 2650 ether;
@@ -52,8 +52,8 @@ contract PixieCrowdsale is Crowdsale, Pausable {
   RefundVault public vault;
 
   /**
-  * @dev Throws if called by any account other than the owner or the someone in the management list.
-  */
+   * @dev Throws if called by any account other than the owner or the someone in the management list.
+   */
   modifier onlyManagement() {
     require(msg.sender == owner || managementWhitelist[msg.sender], "Must be owner or in management whitelist");
     _;
