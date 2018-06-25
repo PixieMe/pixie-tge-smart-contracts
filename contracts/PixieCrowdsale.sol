@@ -11,7 +11,11 @@ contract PixieCrowdsale is Crowdsale, Pausable {
 
   event MinimumContributionUpdated(uint256 _minimumContribution);
 
-  event ManagementTransfer(address indexed caller, address indexed beneficiary, uint256 amount);
+  event ManagementTransfer(
+    address indexed caller,
+    address indexed beneficiary,
+    uint256 amount
+  );
 
   mapping(address => bool) public whitelist;
 
