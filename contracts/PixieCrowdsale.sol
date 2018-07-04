@@ -179,7 +179,7 @@ contract PixieCrowdsale is Crowdsale, Pausable {
    * @param _privateSaleCloseTime the epoch time to set
    */
   function updatePrivateSaleCloseTime(uint256 _privateSaleCloseTime) external onlyManagement {
-    require(_privateSaleCloseTime > 0, "A private sale time must be specified");
+    require(_privateSaleCloseTime > openingTime, "A private sale time must after the opening time");
     privateSaleCloseTime = _privateSaleCloseTime;
   }
 
@@ -190,7 +190,7 @@ contract PixieCrowdsale is Crowdsale, Pausable {
    * @param _preSaleCloseTime the epoch time to set
    */
   function updatePreSaleCloseTime(uint256 _preSaleCloseTime) external onlyManagement {
-    require(_preSaleCloseTime > 0, "A pre sale time must be specified");
+    require(_preSaleCloseTime > privateSaleCloseTime, "A pre sale time must be after the private sale close time");
     preSaleCloseTime = _preSaleCloseTime;
   }
 
@@ -201,7 +201,7 @@ contract PixieCrowdsale is Crowdsale, Pausable {
    * @param _closingTime the epoch time to set
    */
   function updateClosingTime(uint256 _closingTime) external onlyManagement {
-    require(_closingTime > 0, "A closing time must be specified");
+    require(_closingTime > preSaleCloseTime, "A closing time must be after the pre-sale close time");
     closingTime = _closingTime;
   }
 

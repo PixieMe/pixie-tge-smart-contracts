@@ -65,8 +65,6 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
     await this.crowdsale.addToWhitelist(authorizedFour);
     await this.crowdsale.addToWhitelist(authorizedFive);
 
-    // FIXME - unfortunately getting testrpc to play nice with dates is near impossible from what I have found
-
     /////////////////////////////////////////////////////////////////////
     // SET custom dates based on current block and not contract values //
     /////////////////////////////////////////////////////////////////////
@@ -622,6 +620,26 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
           for (let i in tests) {
             await assertRevert(this.crowdsale[tests[i].method](tests[i].date, {from: unauthorized}));
           }
+        });
+
+        describe('should follow the intended start > private > pre > public > close order', async function () {
+            it('private close time can not be before opening date', async function () {
+              await assertRevert(this.crowdsale.updatePrivateSaleCloseTime(this.openingTime - 1, {from: anotherAuthorized}));
+              await assertRevert(this.crowdsale.updatePrivateSaleCloseTime(0, {from: anotherAuthorized}));
+            });
+
+            it('pre-sale close time can not be before private close time (and hence opening time)', async function () {
+                await assertRevert(this.crowdsale.updatePreSaleCloseTime(this.privateSaleCloseTime - 1, {from: anotherAuthorized}));
+                await assertRevert(this.crowdsale.updatePreSaleCloseTime(this.openingTime - 1, {from: anotherAuthorized}));
+                await assertRevert(this.crowdsale.updatePreSaleCloseTime(0, {from: anotherAuthorized}));
+            });
+
+            it('closing time can not be before pre-sale close time (and hence opening time and private close time)', async function () {
+                await assertRevert(this.crowdsale.updateClosingTime(this.preSaleCloseTime - 1, {from: anotherAuthorized}));
+                await assertRevert(this.crowdsale.updateClosingTime(this.privateSaleCloseTime - 1, {from: anotherAuthorized}));
+                await assertRevert(this.crowdsale.updateClosingTime(this.openingTime - 1, {from: anotherAuthorized}));
+                await assertRevert(this.crowdsale.updateClosingTime(0, {from: anotherAuthorized}));
+            });
         });
       });
     });
