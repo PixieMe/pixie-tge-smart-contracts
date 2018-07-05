@@ -27,6 +27,6 @@ module.exports = async function (deployer, network, accounts) {
   // whitelist the crowdsale - so it can transfer tokens to contributors
   await deployedPixieToken.addAddressToWhitelist(PixieCrowdsale.address, {from: _contractCreatorAccount});
 
-  // owner is onlyManagement but this protects in case of ownership transfer
+  // owner is included in onlyManagement guard  but this protects in case of ownership transfer
   await deployedPixieCrowdsale.addToManagementWhitelist(_contractCreatorAccount);
 };

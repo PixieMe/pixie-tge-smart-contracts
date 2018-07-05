@@ -24,6 +24,7 @@ module.exports = function (deployer, network, accounts) {
 
   return deployer.deploy(PixieToken)
   .then(() => {
+    // args: wallet, token
     return deployer.deploy(PixieCrowdsale, _contractCreatorAccount, PixieToken.address);
   });
 };
