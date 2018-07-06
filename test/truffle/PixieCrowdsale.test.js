@@ -1003,7 +1003,7 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         let preTransferBalance = await this.token.balanceOf(wallet);
         let preContractBalance = await this.token.balanceOf(this.crowdsale.address);
 
-        const {logs} = await this.crowdsale.managementTransfer(wallet, ONE_TOKEN, {from: authorized});
+        const {logs} = await this.crowdsale.transfer(wallet, ONE_TOKEN, {from: owner});
 
         let postTransferBalance = await this.token.balanceOf(wallet);
         let postContractBalance = await this.token.balanceOf(this.crowdsale.address);
@@ -1011,16 +1011,19 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         postTransferBalance.should.be.bignumber.equal(preTransferBalance.add(ONE_TOKEN));
         postContractBalance.should.be.bignumber.equal(preContractBalance.minus(ONE_TOKEN));
 
-        let event = logs.find(e => e.event === 'ManagementTransfer');
+        let event = logs.find(e => e.event === 'OwnerTransfer');
         should.exist(event);
 
-        event.args.caller.should.equal(authorized);
+        event.args.caller.should.equal(this.crowdsale.address);
         event.args.beneficiary.should.equal(wallet);
         event.args.amount.should.be.bignumber.equal(ONE_TOKEN);
       });
 
-      it('should not allow non-management to call', async function () {
-        await assertRevert(this.crowdsale.managementTransfer(wallet, ONE_TOKEN, {from: unauthorized}));
+      it('should not allow non-owner to call', async function () {
+        await assertRevert(this.crowdsale.transfer(wallet, ONE_TOKEN, {from: unauthorized}));
+
+        // management whitelist
+        await assertRevert(this.crowdsale.transfer(wallet, ONE_TOKEN, {from: authorized}));
       });
     });
 
@@ -1032,7 +1035,7 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         let preTransferBalance = await this.token.balanceOf(purchaser);
         let preContractBalance = await this.token.balanceOf(this.crowdsale.address);
 
-        const {logs} = await this.crowdsale.managementTransfer(purchaser, LOTS_OF_TOKENS, {from: authorized});
+        const {logs} = await this.crowdsale.transfer(purchaser, LOTS_OF_TOKENS, {from: owner});
 
         let postTransferBalance = await this.token.balanceOf(purchaser);
         let postContractBalance = await this.token.balanceOf(this.crowdsale.address);
@@ -1040,16 +1043,20 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         postTransferBalance.should.be.bignumber.equal(preTransferBalance.add(LOTS_OF_TOKENS));
         postContractBalance.should.be.bignumber.equal(preContractBalance.minus(LOTS_OF_TOKENS));
 
-        let event = logs.find(e => e.event === 'ManagementTransfer');
+        let event = logs.find(e => e.event === 'OwnerTransfer');
         should.exist(event);
 
-        event.args.caller.should.equal(authorized);
+        event.args.caller.should.equal(this.crowdsale.address);
         event.args.beneficiary.should.equal(purchaser);
+        event.args.owner.should.equal(owner);
         event.args.amount.should.be.bignumber.equal(LOTS_OF_TOKENS);
       });
 
-      it('should not allow non-management to call', async function () {
-        await assertRevert(this.crowdsale.managementTransfer(wallet, LOTS_OF_TOKENS, {from: unauthorized}));
+      it('should not allow non-owner to call', async function () {
+        await assertRevert(this.crowdsale.transfer(wallet, LOTS_OF_TOKENS, {from: unauthorized}));
+
+        // management whitelist
+        await assertRevert(this.crowdsale.transfer(wallet, LOTS_OF_TOKENS, {from: authorized}));
       });
     });
 
@@ -1063,7 +1070,7 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         let preTransferBalance = await this.token.balanceOf(purchaser);
         let preContractBalance = await this.token.balanceOf(this.crowdsale.address);
 
-        const {logs} = await this.crowdsale.managementTransfer(purchaser, preContractBalance, {from: authorized});
+        const {logs} = await this.crowdsale.transfer(purchaser, preContractBalance, {from: owner});
 
         let postTransferBalance = await this.token.balanceOf(purchaser);
         let postContractBalance = await this.token.balanceOf(this.crowdsale.address);
@@ -1071,15 +1078,16 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         postTransferBalance.should.be.bignumber.equal(preTransferBalance.add(preContractBalance));
         postContractBalance.should.be.bignumber.equal(preContractBalance.minus(preContractBalance));
 
-        let event = logs.find(e => e.event === 'ManagementTransfer');
+        let event = logs.find(e => e.event === 'OwnerTransfer');
         should.exist(event);
 
-        event.args.caller.should.equal(authorized);
+        event.args.caller.should.equal(this.crowdsale.address);
         event.args.beneficiary.should.equal(purchaser);
+        event.args.owner.should.equal(owner);
         event.args.amount.should.be.bignumber.equal(preContractBalance);
 
         //Ensure no more tokens to return
-        await assertRevert(this.crowdsale.managementTransfer(purchaser, 1, {from: authorized}));
+        await assertRevert(this.crowdsale.transfer(purchaser, 1, {from: authorized}));
       });
     });
 
@@ -1093,7 +1101,7 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         let preTransferBalance = await this.token.balanceOf(purchaser);
         let preContractBalance = await this.token.balanceOf(this.crowdsale.address);
 
-        const {logs} = await this.crowdsale.managementTransfer(purchaser, preContractBalance, {from: authorized});
+        const {logs} = await this.crowdsale.transfer(purchaser, preContractBalance, {from: owner});
 
         let postTransferBalance = await this.token.balanceOf(purchaser);
         let postContractBalance = await this.token.balanceOf(this.crowdsale.address);
@@ -1101,15 +1109,16 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
         postTransferBalance.should.be.bignumber.equal(preTransferBalance.add(preContractBalance));
         postContractBalance.should.be.bignumber.equal(preContractBalance.minus(preContractBalance));
 
-        let event = logs.find(e => e.event === 'ManagementTransfer');
+        let event = logs.find(e => e.event === 'OwnerTransfer');
         should.exist(event);
 
-        event.args.caller.should.equal(authorized);
+        event.args.caller.should.equal(this.crowdsale.address);
         event.args.beneficiary.should.equal(purchaser);
+        event.args.owner.should.equal(owner);
         event.args.amount.should.be.bignumber.equal(preContractBalance);
 
         //Ensure no more tokens to return
-        await assertRevert(this.crowdsale.managementTransfer(purchaser, 1, {from: authorized}));
+        await assertRevert(this.crowdsale.transfer(purchaser, 1, {from: authorized}));
       });
     });
   });

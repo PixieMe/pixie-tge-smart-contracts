@@ -11,7 +11,8 @@ contract PixieCrowdsale is Crowdsale, Pausable {
 
   event MinimumContributionUpdated(uint256 _minimumContribution);
 
-  event ManagementTransfer(
+  event OwnerTransfer(
+    address indexed owner,
     address indexed caller,
     address indexed beneficiary,
     uint256 amount
@@ -305,12 +306,12 @@ contract PixieCrowdsale is Crowdsale, Pausable {
   }
 
   /**
-   * @dev Allow management to transfer tokens. Will be used to transfer unsold tokens.
+   * @dev Allow owner to transfer tokens. Will be used to transfer unsold tokens.
    * @param _beneficiary Token beneficiary
    * @param _tokenAmount Amount of tokens to deliver
    */
-  function managementTransfer(address _beneficiary, uint256 _tokenAmount) external onlyManagement {
+  function transfer(address _beneficiary, uint256 _tokenAmount) external onlyOwner {
     _deliverTokens(_beneficiary, _tokenAmount);
-    emit ManagementTransfer(msg.sender, _beneficiary, _tokenAmount);
+    emit OwnerTransfer(msg.sender, address(this), _beneficiary, _tokenAmount);
   }
 }
