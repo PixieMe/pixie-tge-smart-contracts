@@ -302,7 +302,7 @@ contract PixieCrowdsale is Crowdsale, Pausable {
 
     require(whitelist[_beneficiary], "Beneficiary not whitelisted");
 
-    require(whitelist[msg.sender], "Sender not whitelisted"); // ??
+    require(whitelist[msg.sender], "Sender not whitelisted");
 
     require(!paused, "Contract paused");
   }
