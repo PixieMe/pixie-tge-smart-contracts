@@ -397,9 +397,12 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
     });
 
     describe('accepting payments', function () {
-      it('should accept payments to whitelisted (from whichever buyers)', async function () {
+      it('should accept payments to whitelisted (only sent from whitelisted)', async function () {
         await this.crowdsale.buyTokens(authorized, {value: this.value, from: authorized}).should.be.fulfilled;
-        await this.crowdsale.buyTokens(authorized, {value: this.value, from: unauthorized}).should.be.fulfilled;
+      });
+
+      it('should reject payments to whitelisted (from non-whitelisted address)', async function () {
+        await this.crowdsale.buyTokens(authorized, {value: this.value, from: unauthorized}).should.be.rejected;
       });
 
       it('should reject payments to not whitelisted (from whichever buyers)', async function () {
@@ -426,18 +429,22 @@ contract('PixieCrowdsale', function ([owner, investor, wallet, purchaser, author
     });
 
     describe('accepting payments', function () {
-      it('should accept payments to whitelisted (from whichever buyers)', async function () {
+      it('should accept payments to whitelisted (from whitelisted buyers)', async function () {
 
         await this.crowdsale.buyTokens(authorized, {value: this.value, from: authorized}).should.be.fulfilled;
-        await this.crowdsale.buyTokens(authorized, {value: this.value, from: unauthorized}).should.be.fulfilled;
         await this.crowdsale.buyTokens(anotherAuthorized, {
           value: this.value,
           from: authorized
         }).should.be.fulfilled;
+      });
+
+      it('should reject payments to whitelisted (from non-whitelisted buyers)', async function () {
+
+        await this.crowdsale.buyTokens(authorized, {value: this.value, from: unauthorized}).should.be.rejected;
         await this.crowdsale.buyTokens(anotherAuthorized, {
           value: this.value,
           from: unauthorized
-        }).should.be.fulfilled;
+        }).should.be.rejected;
       });
 
       it('should reject payments to not whitelisted (with whichever buyers)', async function () {
