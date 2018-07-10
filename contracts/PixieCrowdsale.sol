@@ -27,16 +27,20 @@ contract PixieCrowdsale is Crowdsale, Pausable {
   bool public isFinalized = false;
 
   // Tuesday, July 3, 2018 10:00:00 AM GMT+01:00
-  uint256 public openingTime = 1530608400;
+  // FIXME Tuesday, July 10, 2018 10 AM
+  uint256 public openingTime = 1531213200;
 
   // Wednesday, August 1, 2018 9:59:59 AM GMT+01:00
-  uint256 public privateSaleCloseTime = 1533113999;
+  // FIXME Tuesday, July 10, 2018 10:45 AM
+  uint256 public privateSaleCloseTime = 1531215900;
 
   // Monday, October 1, 2018 9:59:59 AM GMT+01:00
-  uint256 public preSaleCloseTime = 1538384399;
+  // FIXME Tuesday, July 10, 2018 11:30 AM
+  uint256 public preSaleCloseTime = 1531218600;
 
   // Wednesday, October 31, 2018 9:59:59 AM GMT+00:00
-  uint256 public closingTime = 1540979999;
+  // FIXME Tuesday, July 10, 2018 12:00 AM
+  uint256 public closingTime = 1531220400;
 
   // price per token (no discount)
   uint256 public rate = 396039;
@@ -47,7 +51,8 @@ contract PixieCrowdsale is Crowdsale, Pausable {
   // 12.5% discount
   uint256 public preSaleRate = 445544;
 
-  uint256 public softCap = 2650 ether;
+  // FIXME - revert to real soft-cap
+  uint256 public softCap = 10 ether;
 
   uint256 public hardCap = 101000 ether;
 
