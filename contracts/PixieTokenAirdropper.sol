@@ -17,7 +17,7 @@ contract PixieTokenAirdropper is Ownable, HasNoEther {
   // by calling methods on the token since we are using the same owner
   // and granting the distribution of tokens to this contract
   constructor(address _token) public payable {
-    require(_token != 0x0, "Must be a non-zero address");
+    require(_token != address(0), "Must be a non-zero address");
 
     token = ERC20Basic(_token);
   }
@@ -26,22 +26,25 @@ contract PixieTokenAirdropper is Ownable, HasNoEther {
     require(_address.length == _values.length, "Address array and values array must be same length");
 
     for (uint i = 0; i < _address.length; i += 1) {
-      token.transfer(_address[i], _values[i]);
-      emit AirDrop(_address[i], _values[i]);
+      _transfer(_address[i], _values[i]);
     }
 
     emit AirDroppedTokens(_address.length);
   }
 
   function transferSingle(address _address, uint256 _value) onlyOwner public {
+    _transfer(_address, _value);
+
+    emit AirDroppedTokens(1);
+  }
+
+  function _transfer(address _address, uint256 _value) internal {
     require(_address != address(0), "Address invalid");
     require(_value > 0, "Value invalid");
 
     token.transfer(_address, _value);
 
     emit AirDrop(_address, _value);
-
-    emit AirDroppedTokens(1);
   }
 
   function remainingBalance() public view returns (uint256) {
@@ -50,7 +53,7 @@ contract PixieTokenAirdropper is Ownable, HasNoEther {
 
   // after we distribute the bonus tokens, we will send them back to the coin itself
   function ownerRecoverTokens(address _beneficiary) external onlyOwner {
-    require(_beneficiary != 0x0);
+    require(_beneficiary != address(0));
     require(_beneficiary != address(token));
 
     uint256 _tokensRemaining = token.balanceOf(address(this));
