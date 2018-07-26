@@ -8,9 +8,10 @@ import 'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol';
 contract PixieTokenAirdropper is Ownable, HasNoEther {
 
   // The token which is already deployed to the network
-  ERC20Basic token;
+  ERC20Basic public token;
 
   event AirDroppedTokens(uint256 addressCount);
+  event AirDrop(address indexed receiver, uint256 total);
 
   // After this contract is deployed, we will grant access to this contract
   // by calling methods on the token since we are using the same owner
@@ -26,9 +27,25 @@ contract PixieTokenAirdropper is Ownable, HasNoEther {
 
     for (uint i = 0; i < _address.length; i += 1) {
       token.transfer(_address[i], _values[i]);
+      emit AirDrop(_address[i], _values[i]);
     }
 
     emit AirDroppedTokens(_address.length);
+  }
+
+  function transferSingle(address _address, uint256 _value) onlyOwner public {
+    require(_address != address(0), "Address invalid");
+    require(_value > 0, "Value invalid");
+
+    token.transfer(_address, _value);
+
+    emit AirDrop(_address, _value);
+
+    emit AirDroppedTokens(1);
+  }
+
+  function remainingBalance() public view returns (uint256) {
+    return token.balanceOf(address(this));
   }
 
   // after we distribute the bonus tokens, we will send them back to the coin itself
